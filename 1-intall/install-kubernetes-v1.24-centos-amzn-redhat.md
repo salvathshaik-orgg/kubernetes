@@ -3,19 +3,26 @@
 ### `Step1: On Master Node Only`
 ```
 ## Install Docker
-sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installDocker.sh -P /tmp
+##sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installDocker.sh -P /tmp
+sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installDocker.sh P /tmp
 sudo chmod 755 /tmp/installDocker.sh
 sudo bash /tmp/installDocker.sh
 sudo systemctl restart docker.service
+sudo systemctl enable docker.service
+sudo systemctl status docker.service
 
 ## Install CRI-Docker
-sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installCRIDockerd.sh -P /tmp
+#sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installCRIDockerd.sh -P /tmp
+sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installCRIDockerd.sh -P /tmp
 sudo chmod 755 /tmp/installCRIDockerd.sh
 sudo bash /tmp/installCRIDockerd.sh
 sudo systemctl restart cri-docker.service
+sudo systemctl enable cri-docker.service
+sudo systemctl status cri-docker.service
 
 ## Install kubeadm,kubelet,kubectl
-sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
+#sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
+sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installK8S.sh -P /tmp
 sudo chmod 755 /tmp/installK8S.sh
 sudo bash /tmp/installK8S.sh
 
@@ -40,19 +47,26 @@ sudo bash /tmp/installK8S.sh
 
 ```
 ## Install Docker
-sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installDocker.sh -P /tmp
+##sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installDocker.sh -P /tmp
+sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installDocker.sh P /tmp
 sudo chmod 755 /tmp/installDocker.sh
 sudo bash /tmp/installDocker.sh
 sudo systemctl restart docker.service
+sudo systemctl enable docker.service
+sudo systemctl status docker.service
 
 ## Install CRI-Docker
-sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installCRIDockerd.sh -P /tmp
+#sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installCRIDockerd.sh -P /tmp
+sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installCRIDockerd.sh -P /tmp
 sudo chmod 755 /tmp/installCRIDockerd.sh
 sudo bash /tmp/installCRIDockerd.sh
 sudo systemctl restart cri-docker.service
+sudo systemctl enable cri-docker.service
+sudo systemctl status cri-docker.service
 
 ## Install kubeadm,kubelet,kubectl
-sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
+#sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
+sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installK8S.sh -P /tmp
 sudo chmod 755 /tmp/installK8S.sh
 sudo bash /tmp/installK8S.sh
 
@@ -60,8 +74,7 @@ sudo bash /tmp/installK8S.sh
 
 kubeadm token create --print-join-command 
 
-    copy the kubeadm join token from master & run it on all nodes
+    copy the kubeadm join token from master & run it on all worker nodes
 
-    Ex: kubeadm join 10.128.15.231:6443 --token mks3y2.v03tyyru0gy12mbt \
-           --discovery-token-ca-cert-hash sha256:3de23d42c7002be0893339fbe558ee75e14399e11f22e3f0b34351077b7c4b56
+    Ex: sudo kubeadm join 10.192.148.186:6443 --token or4owz.wfpu5ilsffgfn30q --discovery-token-ca-cert-hash sha256:4070621ea380c953d82d7ae05f49180ca3c3e68a0c74352ed6afd940ce75eb60 --cri-socket unix:///var/run/cri-dockerd.sock
 ```
