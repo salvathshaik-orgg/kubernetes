@@ -10,7 +10,8 @@
 
 ### Download Script 
 
-> **`wget https://github.com/lerndevops/labs/raw/master/scripts/setupk8s-single-node-cluster.sh -P /tmp`**
+##> **`wget https://github.com/lerndevops/labs/raw/master/scripts/setupk8s-single-node-cluster.sh -P /tmp`**
+> **`wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/setupk8s-single-node-cluster.sh -P /tmp`**
 
 ### Execute the script 
 
