@@ -38,7 +38,11 @@ sudo bash /tmp/installK8S.sh
 
    ## below installs calico networking driver 
     
-   kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
+   ##kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
+
+    sudo wget https://docs.projectcalico.org/manifests/calico.yaml -P /tmp
+    sudo sed -i 's|docker.io/calico|quay.io/calico|g' /tmp/calico.yaml
+    kubectl apply -f /tmp/calico.yaml
 
    # Validate:  kubectl get nodes
 ```
