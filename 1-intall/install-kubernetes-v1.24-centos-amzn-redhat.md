@@ -35,6 +35,8 @@ sudo systemctl status cri-docker.service
 sudo sed -i 's/^disabled_plugins = \["cri"\]/#&/' /etc/containerd/config.toml
 systemctl restart containerd
 
+swapoff -a
+
 ## Install kubeadm,kubelet,kubectl
 #sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
 sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installK8S.sh -P /tmp
@@ -97,6 +99,8 @@ sudo systemctl status cri-docker.service
 
 sudo sed -i 's/^disabled_plugins = \["cri"\]/#&/' /etc/containerd/config.toml
 systemctl restart containerd
+
+swapoff -a
 
 ## Install kubeadm,kubelet,kubectl
 #sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
