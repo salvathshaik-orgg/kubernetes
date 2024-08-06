@@ -2,7 +2,7 @@
 
 ### `Step1: On Master Node Only`
 ```
-##remove previous docker dependancies
+##remove previous docker dependencies, Below is for Centos/oracle. please check online for other distributions
 sudo yum remove docker \
                   docker-client \
                   docker-client-latest \
@@ -32,9 +32,12 @@ sudo systemctl restart cri-docker.service
 sudo systemctl enable cri-docker.service
 sudo systemctl status cri-docker.service
 
+##Need to comment plugin section in the file etc/containerd/config.toml
+##Below is for centos/oracle. please check online for other distributions
 sudo sed -i 's/^disabled_plugins = \["cri"\]/#&/' /etc/containerd/config.toml
 systemctl restart containerd
 
+##Need to stop the swap, otherwise, kubelet will not run, Below is for Centos/oracle. please check online for other distributions
 swapoff -a
 
 ## Install kubeadm,kubelet,kubectl
@@ -67,7 +70,7 @@ sudo bash /tmp/installK8S.sh
 ### `Step2: On All Worker Nodes`
 
 ```
-##remove previous docker dependancies
+##remove previous docker dependencies, Below is for Centos/oracle. please check online for other distributions
 sudo yum remove docker \
                   docker-client \
                   docker-client-latest \
@@ -97,9 +100,12 @@ sudo systemctl restart cri-docker.service
 sudo systemctl enable cri-docker.service
 sudo systemctl status cri-docker.service
 
+##Need to comment plugin section in the file etc/containerd/config.toml
+##Below is for centos/oracle. please check online for other distributions
 sudo sed -i 's/^disabled_plugins = \["cri"\]/#&/' /etc/containerd/config.toml
 systemctl restart containerd
 
+##Need to stop the swap, otherwise, kubelet will not run, Below is for Centos/oracle. please check online for other distributions
 swapoff -a
 
 ## Install kubeadm,kubelet,kubectl
