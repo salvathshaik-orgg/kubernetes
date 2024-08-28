@@ -118,6 +118,7 @@ sudo systemctl status cri-docker.service
 ##Below is for centos/oracle. please check online for other distributions
 sudo sed -i 's/^disabled_plugins = \["cri"\]/#&/' /etc/containerd/config.toml
 systemctl restart containerd
+systemctl status containerd
 
 ##Need to stop the swap, otherwise, kubelet will not run, Below is for Centos/oracle. please check online for other distributions
 swapoff -a
