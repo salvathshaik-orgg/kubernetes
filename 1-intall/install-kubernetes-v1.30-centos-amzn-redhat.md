@@ -21,6 +21,8 @@ sudo chmod 755 /tmp/installDocker.sh
 sudo bash /tmp/installDocker.sh
 sudo systemctl restart docker.service
 sudo systemctl enable docker.service
+#wait for 15 seconds and validate below
+sleep 15
 sudo systemctl status docker.service
 
 ## Install CRI-Docker
@@ -30,12 +32,16 @@ sudo chmod 755 /tmp/installCRIDockerd.sh
 sudo bash /tmp/installCRIDockerd.sh
 sudo systemctl restart cri-docker.service
 sudo systemctl enable cri-docker.service
+#wait for 15 seconds and validate below
+sleep 15
 sudo systemctl status cri-docker.service
 
 ##Need to comment plugin section in the file etc/containerd/config.toml
 ##Below is for centos/oracle. please check online for other distributions
 sudo sed -i 's/^disabled_plugins = \["cri"\]/#&/' /etc/containerd/config.toml
 systemctl restart containerd
+systemctl status containerd
+
 
 ##Need to stop the swap, otherwise, kubelet will not run, Below is for Centos/oracle. please check online for other distributions
 swapoff -a
@@ -45,6 +51,9 @@ swapoff -a
 sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installK8S.sh -P /tmp
 sudo chmod 755 /tmp/installK8S.sh
 sudo bash /tmp/installK8S.sh
+#wait for 15 seconds and validate below
+sleep 15
+##sudo systemctl status kubelet
 
 ## Initialize kubernetes Master Node
  
@@ -64,6 +73,7 @@ sudo bash /tmp/installK8S.sh
     sudo sed -i 's|docker.io/calico|quay.io/calico|g' /tmp/calico.yaml
     kubectl apply -f /tmp/calico.yaml
 
+   #Wait for 2minutes and validate
    # Validate:  kubectl get nodes
 ```
 
@@ -89,6 +99,8 @@ sudo chmod 755 /tmp/installDocker.sh
 sudo bash /tmp/installDocker.sh
 sudo systemctl restart docker.service
 sudo systemctl enable docker.service
+#wait for 15 seconds and validate below
+sleep 15
 sudo systemctl status docker.service
 
 ## Install CRI-Docker
@@ -98,6 +110,8 @@ sudo chmod 755 /tmp/installCRIDockerd.sh
 sudo bash /tmp/installCRIDockerd.sh
 sudo systemctl restart cri-docker.service
 sudo systemctl enable cri-docker.service
+#wait for 15 seconds and validate below
+sleep 15
 sudo systemctl status cri-docker.service
 
 ##Need to comment plugin section in the file etc/containerd/config.toml
@@ -113,6 +127,12 @@ swapoff -a
 sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installK8S.sh -P /tmp
 sudo chmod 755 /tmp/installK8S.sh
 sudo bash /tmp/installK8S.sh
+#wait for 15 seconds and validate below
+sudo systemctl start kubelet
+sudo systemctl enable kubelet
+sudo systemctl is-enabled kubelet
+sleep 15
+##sudo systemctl status kubelet
 
 ## Run Below on Master Node to get join token 
 
