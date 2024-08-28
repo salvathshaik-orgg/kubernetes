@@ -52,7 +52,7 @@ sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scrip
 sudo chmod 755 /tmp/installK8S.sh
 sudo bash /tmp/installK8S.sh
 #wait for 15 seconds and validate below
-sleep 15
+##sleep 15
 ##sudo systemctl status kubelet
 
 ## Initialize kubernetes Master Node
@@ -128,11 +128,11 @@ swapoff -a
 sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installK8S.sh -P /tmp
 sudo chmod 755 /tmp/installK8S.sh
 sudo bash /tmp/installK8S.sh
-#wait for 15 seconds and validate below
 sudo systemctl start kubelet
 sudo systemctl enable kubelet
 sudo systemctl is-enabled kubelet
-sleep 15
+##wait for 15 seconds and validate below
+##sleep 15
 ##sudo systemctl status kubelet
 
 ## Run Below on Master Node to get join token 
