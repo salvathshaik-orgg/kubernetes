@@ -181,8 +181,11 @@ source ~/.bashrc
 ```
 
 step5: Check cluster information:
+```
 kubectl cluster-info
 kubectl config get-contexts
 kubectl get nodes
+```
+
 
 
