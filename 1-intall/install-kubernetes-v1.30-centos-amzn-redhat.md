@@ -167,3 +167,22 @@ step3:
 ```
 kubectl version --client
 ```
+
+step4: To access with kubeconfig
+Setting Up with the Kubeconfig File
+
+```
+export KUBECONFIG=/path/to/your/kubeconfig.yaml
+
+      ## above is only for temporary purpose but for global setup use below
+
+echo 'export KUBECONFIG=/apps/rancher/amp-clm-sit-kubeconfig.yml' >> ~/.bashrc
+source ~/.bashrc
+```
+
+step5: Check cluster information:
+kubectl cluster-info
+kubectl config get-contexts
+kubectl get nodes
+
+
