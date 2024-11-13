@@ -73,8 +73,12 @@ sudo bash /tmp/installK8S.sh
     sudo sed -i 's|docker.io/calico|quay.io/calico|g' /tmp/calico.yaml
     kubectl apply -f /tmp/calico.yaml
 
-   #Wait for 2minutes and validate
-   # Validate:  kubectl get nodes
+   ##Run below two commands if you want to have single node cluster
+	    #mnodename=`kubectl get nodes | grep control-plane | awk '{print $1}'`
+      #kubectl taint node $mnodename node-role.kubernetes.io/control-plane:NoSchedule-
+
+    #Wait for 2minutes and validate
+    # Validate:  kubectl get nodes
 ```
 
 ### `Step2: On All Worker Nodes`
