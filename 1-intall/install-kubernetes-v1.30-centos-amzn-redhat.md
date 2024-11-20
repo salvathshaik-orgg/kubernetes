@@ -191,5 +191,16 @@ kubectl config get-contexts
 kubectl get nodes
 ```
 
-
+## shortcuts in linux alias 
+```
+vi ~/.bashrc
+source ~/.bashrc
+alias k='kubectl'
+alias kgp='kubectl get pods -o wide'
+alias kgd='kubectl get deploy -o wide'
+alias kgs='kubectl get svc -o wide'
+alias kga='kubectl get all'
+alias context='echo kubectl config set-context --current --namespace='
+alias restart-argocd='kubectl scale -n argocd deployment/argocd-server --replicas=0 && kubectl scale -n argocd deployment/argocd-server --replicas=1'
+```
 
