@@ -204,3 +204,26 @@ alias context='echo kubectl config set-context --current --namespace='
 alias restart-argocd='kubectl scale -n argocd deployment/argocd-server --replicas=0 && kubectl scale -n argocd deployment/argocd-server --replicas=1'
 ```
 
+## Argocd CLI installation steps:
+ 
+step1:
+```
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+ ```
+
+step2:
+```
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+```
+
+step3:
+```
+argocd login sv2lxelaappr021:31110 --username admin --password <password>
+```
+ 
+step4: Adding cluster to argoCD
+```
+argocd cluster list
+kubectl config get-contexts -o name
+argocd cluster add kubernetes-admin@kubernetes
+```
