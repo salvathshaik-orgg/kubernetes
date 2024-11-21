@@ -227,3 +227,36 @@ argocd cluster list
 kubectl config get-contexts -o name
 argocd cluster add kubernetes-admin@kubernetes
 ```
+
+## To safely remove and re-add a worker node from your Kubernetes cluster, follow these steps:
+
+step1:
+```
+kubectl cordon <node>
+```
+
+step2:
+```
+kubectl drain <node> --ignore-daemonsets --delete-emptydir-data
+```
+
+step3:
+```
+kubectl delete node <node>
+```
+
+Step 4: Reset the Node (on the Node Itself)
+```
+sudo kubeadm reset --cri-socket unix:///var/run/cri-dockerd.sock
+sudo rm -rf /etc/cni/net.d /var/lib/cni/ /var/lib/kubelet /etc/kubernetes
+```
+
+step5: -- from master node
+```
+kubeadm token create --print-join-command  
+```
+
+step6:
+```
+kubeadm join 10.193.136.98:6443 --token fq0bmj.8cfppyw6t5vepmeu --discovery-token-ca-cert-hash sha256:acbff703277fc16e2b02be6b284f1db83aa85bd5be7bc9e5688f82e33728fbcc --cri-socket unix:///var/run/cri-dockerd.sock
+```
