@@ -14,6 +14,8 @@
 
 > **`wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/setupk8s-single-node-cluster.sh -P /tmp`**
 
+> **`wget https://raw.githubusercontent.com/salvathshaik-orgg/kubernetes/refs/heads/master/scripts/setupk8s-single-node-cluster.sh -P /tmp`**
+
 ### Execute the script 
 
 > **`bash /tmp/setupk8s-single-node-cluster.sh`**
