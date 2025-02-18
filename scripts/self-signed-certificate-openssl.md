@@ -94,7 +94,64 @@ sudo systemctl restart httpd
   sudo cp CA.crt /etc/pki/ca-trust/source/anchors/
   sudo update-ca-trust
   ```
+ 
+## 2nd menthod below
+## Step 6: Generate a Self-Signed Certificate with SANs
+Modern TLS implementations require **Subject Alternative Names (SANs)** for hostname validation.
+
+### 6.1 Create an OpenSSL Config File
+Create a file named `openssl.cnf` with the following content:
+```ini
+[ req ]
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+x509_extensions    = v3_ca
+prompt             = no
+
+[ req_distinguished_name ]
+C  = US
+ST = California
+L  = San Jose
+O  = MyOrganization
+CN = xyzlfgtop001.example.com
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ v3_ca ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = xyzlfgtop001.example.com
+DNS.2 = *.example.com
+IP.1  = 192.168.1.100  # Replace with actual IP if needed
+```
+
+### 6.2 Generate the Certificate with SAN
+#### Generate a Private Key
+```sh
+openssl genpkey -algorithm RSA -out server.key
+```
+#### Generate the CSR
+```sh
+openssl req -new -key server.key -out server.csr -config openssl.cnf
+```
+#### Sign the Certificate Using the CA
+```sh
+openssl x509 -req -in server.csr -CA CA.crt -CAkey CA.key -CAcreateserial -out server.crt -days 365 -sha256 -extfile openssl.cnf -extensions req_ext
+```
+
+### 6.3 Verify the SANs in the Certificate
+```sh
+openssl x509 -in server.crt -text -noout | grep -A1 "Subject Alternative Name"
+```
+You should see:
+```
+X509v3 Subject Alternative Name:
+    DNS:xyzlfgtop001.example.com, DNS:*.example.com, IP Address:192.168.1.100
+```
 
 ## Conclusion
-You have successfully created a self-signed certificate and configured it for `xyzlfgtop001.example.com`. This setup ensures encrypted communication for internal usage.
+You have successfully created a self-signed certificate with **Subject Alternative Names (SANs)** and configured it for `xyzlfgtop001.example.com`. This setup ensures encrypted communication for internal usage while adhering to modern TLS requirements.
 
