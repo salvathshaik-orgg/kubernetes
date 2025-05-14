@@ -260,3 +260,40 @@ step6:
 ```
 kubeadm join 10.193.136.98:6443 --token fq0bmj.8cfppyw6t5vepmeu --discovery-token-ca-cert-hash sha256:acbff703277fc16e2b02bdb83aa85bd5be7bc9e5688f82e33728fbcc --cri-socket unix:///var/run/cri-dockerd.sock
 ```
+
+# Kubernetes Dashboard - Standalone Version Setup
+
+This repository provides instructions to deploy the Kubernetes Dashboard (v2.4.0) using an insecure setup for lab or development purposes.  
+**Note:** This setup is **not recommended** for production use due to the lack of authentication.
+
+## Prerequisites
+
+- A running Kubernetes cluster
+- `kubectl` configured to access the cluster
+
+## Setup Instructions
+
+### 1. Download the Dashboard YAML file
+
+Download the standalone dashboard deployment manifest:
+
+```
+wget https://github.com/salvathshaik-orgg/labs/raw/refs/heads/master/kubernetes/dashboard/dashboard-insecure-v2.4.0.yml
+```
+
+### 2. Deploy the Dashboard
+
+Apply the manifest using kubectl:
+
+```
+kubectl apply -f dashboard-insecure-v2.4.0.yml
+```
+⚠️ The dashboard will be deployed in the default namespace.
+
+### 3. Accessing the Dashboard
+
+Once deployed, you can access the dashboard using a node port
+
+```
+http://sv2lxampk8pr01:30009/#/pod?namespace=default
+```
