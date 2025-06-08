@@ -81,6 +81,7 @@ sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list   # helps tools such as c
 #Update apt package index, then install kubectl:
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
+sudo systemctl status kubelet
 kubelet --version
 kubeadm version
 kubectl version --client
