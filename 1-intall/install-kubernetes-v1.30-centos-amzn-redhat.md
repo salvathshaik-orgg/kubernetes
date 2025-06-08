@@ -46,7 +46,7 @@ systemctl status containerd
 ##Need to stop the swap, otherwise, kubelet will not run, Below is for Centos/oracle. please check online for other distributions
 swapoff -a
 
-## Install kubeadm,kubelet,kubectl
+## Install kubeadm,kubelet,kubectl , for oracle or centos
 #sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
 sudo wget https://raw.githubusercontent.com/salwad-basha-shaik/labs/master/scripts/installK8S.sh -P /tmp
 sudo chmod 755 /tmp/installK8S.sh
@@ -54,6 +54,39 @@ sudo bash /tmp/installK8S.sh
 #wait for 15 seconds and validate below
 ##sleep 15
 ##sudo systemctl status kubelet
+kubelet --version
+kubeadm version
+kubectl version --client
+
+## Install kubernetes for ubuntu
+#follow this link: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
+
+sudo apt-get update
+# apt-transport-https may be a dummy package; if so, you can skip that package
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+
+# If the folder `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
+# sudo mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg # allow unprivileged APT programs to read this keyring
+
+# Add the appropriate Kubernetes apt repository. If you want to use Kubernetes version different than v1.33,replace v1.33 with the desired minor version in the command below:
+# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list   # helps tools such as command-not-found to work correctly
+
+# Note:
+# To upgrade kubectl to another minor release, you'll need to bump the version in /etc/apt/sources.list.d/kubernetes.list before running apt-get update and apt-get upgrade. This procedure is described in more detail in Changing The Kubernetes Package Repository.
+
+#Update apt package index, then install kubectl:
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+kubelet --version
+kubeadm version
+kubectl version --client
+#sudo apt-mark hold kubelet kubeadm kubectl
+
+
 
 ## Initialize kubernetes Master Node
  
