@@ -331,3 +331,42 @@ Once deployed, you can access the dashboard using a node port
 ```
 http://sv2lxampk8pr01:30009/#/pod?namespace=default
 ```
+
+# 🐳 Docker Installation Issue - Repository Metadata Error
+
+When attempting to run the following command on Oracle Linux:
+
+```bash
+sudo dnf -y install dnf-plugins-core
+```
+
+You may encounter the following error:
+
+```
+OEL7_ELS_BKP_BKP                                                                                       0.0  B/s |   0  B     00:00
+Errors during downloading metadata for repository 'OEL7_ELS_BKP':
+  - Curl error (37): Couldn't read a file:// file for file:///tmp/ExtendPatches/repodata/repomd.xml [Couldn't open file /tmp/ExtendPatches/repodata/repomd.xml]
+Error: Failed to download metadata for repo 'OEL7_ELS_BKP': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried
+```
+
+---
+
+## ✅ Solution
+
+Disable the faulty repository and clear the DNF cache:
+
+```bash
+sudo dnf config-manager --disable OEL7_ELS_BKP
+sudo dnf clean all
+sudo rm -rf /var/cache/dnf
+```
+
+After cleaning up, **re-run the installation**:
+
+```bash
+sudo dnf -y install dnf-plugins-core
+```
+
+---
+
+This step is part of the Docker installation process. If you encounter the metadata error, applying the above solution should allow you to proceed with your Docker setup.
