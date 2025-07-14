@@ -370,3 +370,202 @@ sudo dnf -y install dnf-plugins-core
 ---
 
 This step is part of the Docker installation process. If you encounter the metadata error, applying the above solution should allow you to proceed with your Docker setup.
+
+
+# 📦 Kubernetes Yum Repo Error – `OEL7_ELS_BKP` and How to Fix It
+
+When installing or upgrading Kubernetes components (e.g., `kubelet`, `kubeadm`, `kubectl`) on Oracle Linux 7 or 8, you may encounter the following error:
+
+---
+
+## ❗️ Error
+
+```
+Errors during downloading metadata for repository 'OEL7_ELS_BKP':
+  - Curl error (37): Couldn't read a file:// file for file:///tmp/ExtendPatches/repodata/repomd.xml [Couldn't open file /tmp/ExtendPatches/repodata/repomd.xml]
+Error: Failed to download metadata for repo 'OEL7_ELS_BKP': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried
+```
+
+---
+
+## 📌 Root Cause
+
+The system has a local (offline) YUM repository configured with the name `OEL7_ELS_BKP`. This repo points to a file location:
+
+```
+file:///tmp/ExtendPatches/
+```
+
+However, this file or path does **not exist**, causing `yum` to fail — even if the Kubernetes repo is correctly set up.
+
+---
+
+## ✅ Solutions
+
+### Option 1: Disable the Broken Repo Temporarily
+
+Use the `--disablerepo` flag while installing Kubernetes components:
+
+```bash
+sudo yum install -y kubelet-1.30.1 kubeadm-1.30.1 kubectl-1.30.1 --disablerepo=OEL7_ELS_BKP
+```
+
+---
+
+### Option 2: Permanently Disable the Broken Repo
+
+#### Method 1: Edit the `.repo` file manually
+
+```bash
+sudo vi /etc/yum.repos.d/OEL7_ELS_BKP.repo
+```
+
+Set the following:
+
+```ini
+enabled=0
+```
+
+#### Method 2: Use `yum-config-manager` (if installed)
+
+```bash
+sudo yum-config-manager --disable OEL7_ELS_BKP
+```
+
+---
+
+## 📦 Retry the Kubernetes Installation
+
+After disabling the broken repo:
+
+```bash
+sudo yum install -y kubelet-1.30.1 kubeadm-1.30.1 kubectl-1.30.1
+```
+
+---
+
+## 📝 Notes
+
+- This issue is unrelated to the Kubernetes repo itself — the error is caused by a broken local repo interfering with the entire YUM transaction.
+- You can re-enable the repo later if you need it, or remove the `.repo` file if unused.
+
+---
+
+## 🔗 Related
+
+- [Kubernetes Linux Install Docs](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
+- [Mirantis cri-dockerd](https://github.com/Mirantis/cri-dockerd)
+
+
+# 🛠️ Kubernetes Worker Node Join Failure - TLS Bootstrap Timeout
+
+## 📅 Date Recorded: 2025-07-14
+## ✅ Status: Resolved
+
+---
+
+## 🔍 Issue Summary
+
+While attempting to join a Kubernetes worker node to the cluster using `kubeadm join`, the process failed with the following error:
+
+```
+[kubelet-start] Waiting for the kubelet to perform the TLS Bootstrap
+error execution phase kubelet-start: context deadline exceeded
+```
+
+---
+
+## 🧠 Root Cause
+
+This issue was caused by **TLS bootstrap failing** due to either:
+- Leftover old kubelet/kubeadm configs from before cert rotation.
+- Misconfiguration of the kubelet.
+- CRI socket misalignment (e.g. Docker with cri-dockerd).
+- Mismatch between control plane and worker kubelet version.
+- Residual metadata in `/var/lib/kubelet/` or `/etc/kubernetes/`.
+
+> ⚠️ Kubernetes control plane certificates had been **rotated 1 month earlier**, which invalidated old TLS trust for kubelets trying to rejoin.
+
+---
+
+## ✅ Confirmed Conditions (no issues)
+
+- ✅ Firewall was **inactive** on the worker node.
+- ✅ SELinux was **disabled**.
+- ✅ `curl -k https://<MASTER_IP>:6443/version` succeeded, confirming network and API reachability.
+
+---
+
+## 🧹 Solution Steps (Clean Fix Path)
+
+### 🔁 Step 1: Cleanup the worker node
+
+```bash
+kubeadm reset -f
+sudo systemctl stop kubelet
+sudo systemctl stop docker
+
+sudo rm -rf /etc/kubernetes/
+sudo rm -rf /var/lib/kubelet/
+sudo rm -rf /etc/cni/ /opt/cni/
+sudo rm -rf ~/.kube
+sudo rm -rf /etc/systemd/system/kubelet.service.d/
+
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+```
+
+---
+
+### 🔁 Step 2: Ensure CRI socket is correct
+
+```bash
+ls -l /var/run/cri-dockerd.sock
+```
+
+> Must exist if using Docker runtime.
+> Join command **must use**: `--cri-socket unix:///var/run/cri-dockerd.sock`
+
+---
+
+### 🔁 Step 3: Reinstall kubeadm, kubelet, kubectl (v1.30.1 to match control plane)
+
+```bash
+sudo yum install -y kubelet-1.30.1 kubeadm-1.30.1 kubectl-1.30.1
+sudo systemctl enable kubelet
+sudo systemctl restart kubelet
+```
+
+---
+
+### 🔁 Step 4: Rejoin with new token
+
+Generate on master:
+```bash
+kubeadm token create --print-join-command
+```
+
+Run the resulting command on worker node:
+
+```bash
+kubeadm join <MASTER_IP>:6443 \
+  --token <token> \
+  --discovery-token-ca-cert-hash sha256:<hash> \
+  --cri-socket unix:///var/run/cri-dockerd.sock
+```
+
+---
+
+## ✅ Outcome
+
+The node successfully rejoined the cluster after following the above steps.
+
+---
+
+## 📝 Notes
+
+- This issue is common after renewing Kubernetes CA or kubelet certs.
+- Cleaning `/var/lib/kubelet` and `/etc/kubernetes` is critical.
+- Always match Kubernetes versions between master and worker.
+
+
