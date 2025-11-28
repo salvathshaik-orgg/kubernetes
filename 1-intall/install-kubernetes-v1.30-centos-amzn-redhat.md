@@ -58,6 +58,8 @@ kubelet --version
 kubeadm version
 kubectl version --client
 
+```
+
 # UBUNTU 22.04 Installation steps from docker to kubernetes
 
 ```bash
