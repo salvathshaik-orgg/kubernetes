@@ -58,7 +58,100 @@ kubelet --version
 kubeadm version
 kubectl version --client
 
-## Install kubernetes for ubuntu
+# UBUNTU 22.04 Installation steps from docker to kubernetes
+
+```bash
+#!/bin/bash
+set -e
+
+#STEP 1 — Remove the current Docker repo & keys
+
+sudo rm -f /etc/apt/sources.list.d/docker.list
+sudo rm -f /etc/apt/sources.list.d/docker-ce.list
+sudo rm -f /usr/share/keyrings/docker-archive-keyring.gpg
+sudo rm -f /etc/apt/keyrings/docker.gpg
+
+# Add the correct Docker repository for Ubuntu 22.04
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+https://download.docker.com/linux/ubuntu jammy stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
+# STEP 3 — List available Docker versions
+apt-cache madison docker-ce
+
+echo "🔥 Stopping services..."
+sudo systemctl stop docker cri-docker 2>/dev/null || true
+sudo systemctl stop docker.socket cri-docker.socket 2>/dev/null || true
+
+echo "🔥 Disabling services..."
+sudo systemctl disable docker docker.socket 2>/dev/null || true
+sudo systemctl disable cri-docker cri-docker.socket 2>/dev/null || true
+
+echo "🔥 Removing ALL Docker & container runtimes..."
+sudo apt-get remove -y docker docker-engine docker.io containerd runc || true
+sudo apt-get remove -y docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin docker-scan-plugin || true
+sudo snap remove docker 2>/dev/null || true
+
+echo "🔥 Cleaning old binaries..."
+sudo rm -f /usr/bin/docker /usr/bin/dockerd /usr/bin/docker* /usr/local/bin/docker* 2>/dev/null || true
+sudo rm -f /var/run/docker.sock /var/run/cri-dockerd.sock 2>/dev/null || true
+
+echo "🧹 Cleaning leftover directories..."
+sudo rm -rf /etc/docker 2>/dev/null || true
+
+echo "📦 Installing Docker 24.0.9 (stable & cri-dockerd friendly)..."
+sudo apt-get update
+sudo apt-get install -y \
+  docker-ce=5:24.0.9-1~ubuntu.22.04~jammy \
+  docker-ce-cli=5:24.0.9-1~ubuntu.22.04~jammy \
+  containerd.io
+
+echo "🔧 Enabling & restarting Docker..."
+sudo systemctl enable docker
+sudo systemctl restart docker
+sleep 3
+
+echo "🧪 Testing Docker API..."
+curl --unix-socket /var/run/docker.sock http://localhost/version
+docker ps || true
+
+echo "📥 Installing cri-dockerd 0.3.21..."
+cd /tmp
+wget -q https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.21/cri-dockerd_0.3.21.3-0.ubuntu-jammy_amd64.deb
+sudo dpkg -i cri-dockerd_0.3.21.3-0.ubuntu-jammy_amd64.deb
+
+
+sudo systemctl daemon-reload
+
+echo "🚀 Starting cri-dockerd..."
+sudo systemctl enable cri-docker
+sudo systemctl restart cri-docker
+sleep 3
+
+echo "🧪 Testing cri-dockerd socket..."
+sudo ss -xlpn | grep cri-docker || true
+
+echo "🧪 Checking cri-dockerd service..."
+sudo systemctl status cri-docker --no-pager || true
+
+echo "🎉 ALL DONE!"
+echo "👉 You can now run: (only after kubernetes components installed)"
+echo "kubeadm init --cri-socket unix:///var/run/cri-dockerd.sock"
+
+```
+
+# Install kubernetes for ubuntu
 #follow this link: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
 
 sudo apt-get update
